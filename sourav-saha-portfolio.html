@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sourav Saha — IPA Consultant & RPA Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050810;
+      --surface: #0c0f1e;
+      --surface2: #111526;
+      --blue: #4f8ef7;
+      --cyan: #00e5c3;
+      --orange: #ff6b35;
+      --text: #eef0f8;
+      --muted: #6b7199;
+      --border: rgba(79,142,247,0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; cursor: none; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 4px; }
+
+    .cursor { width: 10px; height: 10px; background: var(--cyan); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width 0.2s, height 0.2s; }
+    .cursor-ring { width: 36px; height: 36px; border: 1.5px solid rgba(0,229,195,0.4); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: left 0.12s ease, top 0.12s ease; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 5vw; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; background: linear-gradient(135deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-badge { display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; color: var(--cyan); font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(0,229,195,0.3); padding: 0.4rem 0.9rem; border-radius: 100px; }
+    .nav-badge::before { content: ''; width: 6px; height: 6px; background: var(--cyan); border-radius: 50%; animation: blink 1.5s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* ── STAMP INTRO OVERLAY ── */
+    #stamp-overlay {
+      position: fixed; inset: 0; z-index: 9990;
+      background: #050810;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      pointer-events: all;
+      overflow: hidden;
+    }
+    #stamp-overlay.done { pointer-events: none; }
+
+    /* Grid lines behind text */
+    .stamp-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.05) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+
+    /* Each title card */
+    .stamp-word {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1.2rem;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .stamp-word.active { pointer-events: none; }
+
+    .stamp-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.65rem, 1vw, 0.85rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+    .stamp-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 9vw, 9rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      text-align: center;
+      padding: 0 5vw;
+      will-change: transform, opacity, filter;
+    }
+    .stamp-underline {
+      height: 4px; width: 0;
+      border-radius: 4px;
+      transition: width 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* Colours per title */
+    .sw-mvp    .stamp-text { color: #FFD700; }
+    .sw-mvp    .stamp-underline { background: #FFD700; box-shadow: 0 0 20px #FFD700; }
+    .sw-mvp    .stamp-label { color: #FFD700; }
+
+    .sw-ui     .stamp-text { color: var(--cyan); }
+    .sw-ui     .stamp-underline { background: var(--cyan); box-shadow: 0 0 20px var(--cyan); }
+    .sw-ui     .stamp-label { color: var(--cyan); }
+
+    .sw-bp     .stamp-text { color: #a78bfa; }
+    .sw-bp     .stamp-underline { background: #a78bfa; box-shadow: 0 0 20px #a78bfa; }
+    .sw-bp     .stamp-label { color: #a78bfa; }
+
+    .sw-pa     .stamp-text { color: var(--orange); }
+    .sw-pa     .stamp-underline { background: var(--orange); box-shadow: 0 0 20px var(--orange); }
+    .sw-pa     .stamp-label { color: var(--orange); }
+
+    /* Shockwave ring */
+    .stamp-ring {
+      position: absolute; width: 200px; height: 200px;
+      border-radius: 50%; border: 3px solid currentColor;
+      opacity: 0; pointer-events: none;
+      transform: scale(0.2);
+    }
+
+    /* Progress dots */
+    .stamp-dots {
+      position: absolute; bottom: 2.5rem;
+      display: flex; gap: 0.6rem;
+    }
+    .sdot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .sdot.on { transform: scale(1.3); }
+
+    /* Skip button */
+    .stamp-skip {
+      position: absolute; bottom: 2.2rem; right: 2.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.1em; cursor: pointer;
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.4rem 1rem; border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .stamp-skip:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+    #hero { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; padding: 9rem 5vw 6rem; gap: 4rem; position: relative; overflow: hidden; }
+    .orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(90px); }
+    .orb1 { width: 650px; height: 650px; background: rgba(79,142,247,0.15); top: -250px; left: -150px; }
+    .orb2 { width: 450px; height: 450px; background: rgba(0,229,195,0.1); bottom: -100px; right: -100px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--cyan); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .hero-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--cyan); }
+    h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.8rem, 5vw, 4.8rem); line-height: 1.02; letter-spacing: -0.02em; }
+    .grad { background: linear-gradient(135deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-role { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--orange); margin-top: 1rem; letter-spacing: 0.04em; }
+    .hero-desc { margin-top: 1.5rem; color: var(--muted); font-size: 1rem; line-height: 1.8; font-weight: 300; max-width: 500px; }
+    .cert-pills { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .cpill { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; padding: 0.3rem 0.7rem; border-radius: 4px; background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25); color: var(--blue); }
+    .hero-btns { margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-g { background: linear-gradient(135deg, var(--blue), var(--cyan)); color: #050810; padding: 0.85rem 2rem; border-radius: 6px; font-weight: 700; font-size: 0.9rem; text-decoration: none; letter-spacing: 0.04em; box-shadow: 0 0 30px rgba(79,142,247,0.3); transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-g:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(79,142,247,0.5); }
+    .btn-o { border: 1px solid var(--border); color: var(--text); padding: 0.85rem 2rem; border-radius: 6px; font-size: 0.9rem; text-decoration: none; font-weight: 500; transition: border-color 0.2s, color 0.2s; }
+    .btn-o:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; position: relative; overflow: hidden; }
+    .hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .sv { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.4rem; background: linear-gradient(135deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sl { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+    .stags { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .stag { font-family: 'JetBrains Mono', monospace; font-size: 0.67rem; color: var(--cyan); background: rgba(0,229,195,0.07); border: 1px solid rgba(0,229,195,0.18); padding: 0.28rem 0.65rem; border-radius: 4px; }
+    .clines { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .cline { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 0.6rem; }
+
+    section { padding: 6rem 5vw; }
+    .slbl { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--cyan); letter-spacing: 0.18em; text-transform: uppercase; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+    .slbl::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 50px; }
+    .stitle { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+    .sdesc { color: var(--muted); font-size: 1rem; font-weight: 300; max-width: 480px; line-height: 1.75; }
+
+    #experience { background: var(--surface); }
+    .timeline { margin-top: 4rem; display: flex; flex-direction: column; }
+    .titem { display: grid; grid-template-columns: 180px 1fr; gap: 3rem; padding: 3rem 0; border-bottom: 1px solid var(--border); position: relative; }
+    .titem::before { content: ''; position: absolute; left: 176px; top: 0; bottom: 0; width: 1px; background: var(--border); }
+    .titem::after { content: ''; position: absolute; left: 170px; top: 3rem; width: 12px; height: 12px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 14px var(--blue); }
+    .tdate { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); padding-top: 0.2rem; line-height: 1.6; }
+    .tcur { color: var(--cyan); }
+    .tco { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.4rem; margin-bottom: 0.2rem; }
+    .trole { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--orange); margin-bottom: 1.25rem; }
+    .tbullets { display: flex; flex-direction: column; gap: 0.6rem; }
+    .tbullet { display: flex; gap: 0.75rem; font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+    .tbullet::before { content: '▹'; color: var(--cyan); flex-shrink: 0; }
+    .tchips { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .tchip { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; padding: 0.3rem 0.8rem; border-radius: 4px; background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.25); color: var(--orange); }
+
+    #skills { background: var(--bg); }
+    .sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 4rem; }
+    .sgroup-title { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--blue); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .sgroup { display: flex; flex-direction: column; gap: 1.25rem; }
+    .sbi { display: flex; flex-direction: column; gap: 0.45rem; }
+    .sbh { display: flex; justify-content: space-between; }
+    .sbn { font-size: 0.88rem; font-weight: 500; }
+    .sbp { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+    .sbt { height: 3px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+    .sbf { height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); transform: scaleX(0); transform-origin: left; transition: transform 1.1s cubic-bezier(0.16,1,0.3,1); }
+    .sbf.on { transform: scaleX(1); }
+
+    #certifications { background: var(--surface); }
+    .cgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.25rem; margin-top: 4rem; }
+    .ccard { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; transition: border-color 0.3s, transform 0.3s; position: relative; overflow: hidden; }
+    .ccard::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--cyan)); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+    .ccard:hover { border-color: rgba(79,142,247,0.35); transform: translateY(-4px); }
+    .ccard:hover::after { transform: scaleX(1); }
+    .ci { font-size: 1.8rem; margin-bottom: 1rem; }
+    .cn { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem; line-height: 1.35; }
+    .cd { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); margin-bottom: 1rem; }
+    .cl { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--cyan); text-decoration: none; }
+    .cl:hover { text-decoration: underline; }
+
+    #projects { background: var(--bg); }
+    .pgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-top: 4rem; }
+    .pcard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; transition: border-color 0.3s, transform 0.3s; display: flex; flex-direction: column; }
+    .pcard:hover { border-color: rgba(0,229,195,0.3); transform: translateY(-4px); }
+    .ph { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .pico { font-size: 2rem; }
+    .pbadge { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--orange); border: 1px solid rgba(255,107,53,0.3); padding: 0.25rem 0.55rem; border-radius: 4px; }
+    .pname { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.75rem; }
+    .pdesc { font-size: 0.86rem; color: var(--muted); line-height: 1.7; font-weight: 300; flex: 1; }
+    .ptags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.25rem; }
+    .ptag { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--blue); background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2); padding: 0.25rem 0.55rem; border-radius: 4px; }
+
+    #contact { background: var(--surface); }
+    .contact-box { max-width: 680px; margin: 4rem auto 0; text-align: center; }
+    .cemail { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(1.4rem, 3vw, 2.2rem); background: linear-gradient(135deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; text-decoration: none; margin: 2rem 0; }
+    .cdetails { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .cditem { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+    .cdlbl { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
+    .cdval { font-size: 0.88rem; }
+
+    footer { background: var(--bg); border-top: 1px solid var(--border); padding: 2.5rem 5vw; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .fc { font-size: 0.78rem; color: var(--muted); }
+    .fm { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.65s, transform 0.65s; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; } .d3 { transition-delay: 0.3s; }
+
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding-top: 7rem; }
+      .hero-right { display: none; }
+      .titem { grid-template-columns: 1fr; gap: 1rem; }
+      .titem::before, .titem::after { display: none; }
+      .sgrid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curR"></div>
+
+<nav>
+  <div class="nav-logo">Sourav Saha</div>
+  <ul class="nav-links">
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-badge">Open to Work</div>
+</nav>
+
+<!-- STAMP INTRO OVERLAY -->
+<div id="stamp-overlay">
+  <div class="stamp-grid"></div>
+
+  <!-- Card 1: Blue Prism MVP -->
+  <div class="stamp-word sw-mvp" id="sw0">
+    <div class="stamp-ring" style="color:#FFD700"></div>
+    <div class="stamp-label">Recognition</div>
+    <div class="stamp-text">👑 Blue Prism MVP</div>
+    <div class="stamp-underline"></div>
+  </div>
+
+  <!-- Card 2: 5x UiPath -->
+  <div class="stamp-word sw-ui" id="sw1">
+    <div class="stamp-ring" style="color:#00e5c3"></div>
+    <div class="stamp-label">UiPath · 5 Certifications</div>
+    <div class="stamp-text">⚡UiPath 5× Certified</div>
+    <div class="stamp-underline"></div>
+  </div>
+
+  <!-- Card 3: 3x Blue Prism -->
+  <div class="stamp-word sw-bp" id="sw2">
+    <div class="stamp-ring" style="color:#a78bfa"></div>
+    <div class="stamp-label">Blue Prism · 3 Certifications</div>
+    <div class="stamp-text">🔷Blue Prism 3× Certified</div>
+    <div class="stamp-underline"></div>
+  </div>
+
+  <!-- Card 4: Power Automate -->
+  <div class="stamp-word sw-pa" id="sw3">
+    <div class="stamp-ring" style="color:#ff6b35"></div>
+    <div class="stamp-label">Microsoft</div>
+    <div class="stamp-text">🌀 Power Automate Certified</div>
+    <div class="stamp-underline"></div>
+  </div>
+
+  <div class="stamp-dots">
+    <div class="sdot" id="dot0"></div>
+    <div class="sdot" id="dot1"></div>
+    <div class="sdot" id="dot2"></div>
+    <div class="sdot" id="dot3"></div>
+  </div>
+  <button class="stamp-skip" id="stampSkip">SKIP →</button>
+</div>
+
+<section id="hero">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">IPA Consultant &amp; RPA Developer</div>
+    <h1>Hi, I'm<br/><span class="grad">Sourav Saha</span></h1>
+    <div class="hero-role">// 5&times; UiPath Certified Professional</div>
+    <p class="hero-desc">Results-driven RPA Developer with 4+ years designing intelligent automation across finance, healthcare, HR &amp; IT — slashing manual effort by up to 80%.</p>
+    <div class="cert-pills">
+      <span class="cpill">UiPath</span><span class="cpill">Blue Prism</span><span class="cpill">Power Automate</span>
+      <span class="cpill">Python</span><span class="cpill">AI / ML</span><span class="cpill">OCR / IDP</span>
+    </div>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-g">Hire Me</a>
+      <a href="#projects" class="btn-o">View Projects</a>
+    </div>
+  </div>
+
+  <div class="hero-right reveal">
+    <div class="hero-card">
+      <div class="stats-grid">
+        <div><div class="sv">4+</div><div class="sl">Years Experience</div></div>
+        <div><div class="sv">5×</div><div class="sl">UiPath Certified</div></div>
+        <div><div class="sv">15+</div><div class="sl">Bots Deployed</div></div>
+        <div><div class="sv">80%</div><div class="sl">Effort Reduction</div></div>
+      </div>
+      <div class="stags">
+        <span class="stag">UiPath Studio</span><span class="stag">Orchestrator</span>
+        <span class="stag">Doc Understanding</span><span class="stag">AI Center</span>
+        <span class="stag">ABBYY</span><span class="stag">SAP</span>
+        <span class="stag">Mainframe</span><span class="stag">Python</span><span class="stag">C# .NET</span>
+      </div>
+      <div class="clines">
+        <div class="cline">📧 souravsaha.rpa@gmail.com</div>
+        <div class="cline">📞 +91 6289691710</div>
+        <div class="cline">📍 West Bengal, India</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="slbl">Career</div>
+  <div class="stitle">Experience</div>
+  <p class="sdesc">4+ years delivering intelligent automation across enterprise environments worldwide.</p>
+  <div class="timeline">
+    <div class="titem reveal">
+      <div class="tdate">Jan 2024<br/>— <span class="tcur">Present</span></div>
+      <div>
+        <div class="tco">WonderBotz, LLC</div>
+        <div class="trole">Consultant — Automation Developer · Remote</div>
+        <div class="tbullets">
+          <div class="tbullet">Led automation development for an entire department, identifying operational bottlenecks and delivering scalable solutions that transformed daily workflows.</div>
+          <div class="tbullet">Developed an IDP framework to intelligently process diverse Excel files based on configurable business rules — no code changes needed per file.</div>
+          <div class="tbullet">Automated SAP, Mainframe, web-based, and Java applications; led successful migration from legacy to modern environments.</div>
+          <div class="tbullet">Wrote Python scripts to optimize existing automation code, improving speed and overall process efficiency significantly.</div>
+          <div class="tbullet">Collaborated directly with business stakeholders to gather requirements and strengthen client relationships throughout project delivery.</div>
+        </div>
+        <div class="tchips">
+          <span class="tchip">80% processing time reduction</span>
+          <span class="tchip">60% cost savings</span>
+        </div>
+      </div>
+    </div>
+    <div class="titem reveal d1">
+      <div class="tdate">Feb 2022<br/>— Dec 2023</div>
+      <div>
+        <div class="tco">WonderBotz, LLC</div>
+        <div class="trole">Jr. Consultant — Automation Developer · Ahmedabad, India</div>
+        <div class="tbullets">
+          <div class="tbullet">Developed and deployed 15+ RPA bots using Blue Prism and UiPath across browser-based, mainframe, and Citrix environments.</div>
+          <div class="tbullet">Built OCR-based invoice processing solutions using ABBYY, streamlining data extraction and vendor verification workflows.</div>
+          <div class="tbullet">Executed seamless API integrations to enhance process efficiency, accuracy, and end-to-end data flow.</div>
+          <div class="tbullet">Provided production support ensuring continuous operation and rapid resolution of exceptions post-deployment.</div>
+        </div>
+        <div class="tchips">
+          <span class="tchip">70% processing time reduction</span>
+          <span class="tchip">50% cost savings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="slbl">Expertise</div>
+  <div class="stitle">Skills</div>
+  <p class="sdesc">A versatile toolkit spanning RPA platforms, OCR, AI/ML integrations, and programming.</p>
+  <div class="sgrid">
+    <div class="sgroup reveal">
+      <div class="sgroup-title">RPA &amp; Automation</div>
+      <div class="sbi"><div class="sbh"><span class="sbn">UiPath</span><span class="sbp">95%</span></div><div class="sbt"><div class="sbf" data-w="0.95"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">Blue Prism</span><span class="sbp">85%</span></div><div class="sbt"><div class="sbf" data-w="0.85"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">Power Automate</span><span class="sbp">75%</span></div><div class="sbt"><div class="sbf" data-w="0.75"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">UiPath Orchestrator</span><span class="sbp">92%</span></div><div class="sbt"><div class="sbf" data-w="0.92"></div></div></div>
+    </div>
+    <div class="sgroup reveal d1">
+      <div class="sgroup-title">OCR &amp; AI</div>
+      <div class="sbi"><div class="sbh"><span class="sbn">UiPath Document Understanding</span><span class="sbp">92%</span></div><div class="sbt"><div class="sbf" data-w="0.92"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">ABBYY OCR</span><span class="sbp">85%</span></div><div class="sbt"><div class="sbf" data-w="0.85"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">AI Center / ML Models</span><span class="sbp">80%</span></div><div class="sbt"><div class="sbf" data-w="0.80"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">Agentic Automation</span><span class="sbp">82%</span></div><div class="sbt"><div class="sbf" data-w="0.82"></div></div></div>
+    </div>
+    <div class="sgroup reveal d2">
+      <div class="sgroup-title">Programming</div>
+      <div class="sbi"><div class="sbh"><span class="sbn">Python</span><span class="sbp">85%</span></div><div class="sbt"><div class="sbf" data-w="0.85"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">C# .NET</span><span class="sbp">75%</span></div><div class="sbt"><div class="sbf" data-w="0.75"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">SQL</span><span class="sbp">80%</span></div><div class="sbt"><div class="sbf" data-w="0.80"></div></div></div>
+    </div>
+    <div class="sgroup reveal d3">
+      <div class="sgroup-title">Enterprise Platforms</div>
+      <div class="sbi"><div class="sbh"><span class="sbn">SAP</span><span class="sbp">82%</span></div><div class="sbt"><div class="sbf" data-w="0.82"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">Mainframe</span><span class="sbp">78%</span></div><div class="sbt"><div class="sbf" data-w="0.78"></div></div></div>
+      <div class="sbi"><div class="sbh"><span class="sbn">SharePoint / APIs</span><span class="sbp">85%</span></div><div class="sbt"><div class="sbf" data-w="0.85"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="certifications">
+  <div class="slbl">Credentials</div>
+  <div class="stitle">Certifications</div>
+  <p class="sdesc">5&times; UiPath Certified Professional — among the highest level of RPA expertise globally.</p>
+  <div class="cgrid">
+    <div class="ccard reveal"><div class="ci">🏗️</div><div class="cn">Automation Solution Architect Professional</div><div class="cd">August 2025</div><a href="https://credentials.uipath.com/48f1b3e4-ef5d-44af-b2e9-10aaf7d2e521" target="_blank" class="cl">View Credential →</a></div>
+    <div class="ccard reveal d1"><div class="ci">🤖</div><div class="cn">Agentic Automation Associate</div><div class="cd">December 2025</div><a href="https://credentials.uipath.com/a7adac60-eee7-4b5d-b3b7-c94772e3cc33" target="_blank" class="cl">View Credential →</a></div>
+    <div class="ccard reveal d2"><div class="ci">⚙️</div><div class="cn">Automation Developer Professional</div><div class="cd">June 2025</div><a href="https://credentials.uipath.com/c0df9a55-d43a-4b3e-b255-0079f5ba5cd9" target="_blank" class="cl">View Credential →</a></div>
+    <div class="ccard reveal"><div class="ci">🧠</div><div class="cn">Specialized AI Professional</div><div class="cd">April 2025</div><a href="https://credentials.uipath.com/e89342c3-0501-43c5-ae07-95dd25f93405" target="_blank" class="cl">View Credential →</a></div>
+    <div class="ccard reveal d1"><div class="ci">📊</div><div class="cn">Automation Business Analyst Professional</div><div class="cd">April 2025</div><a href="https://credentials.uipath.com/75ae4b7a-74e1-4af3-a493-f7c663193f46" target="_blank" class="cl">View Credential →</a></div>
+    <div class="ccard reveal d2"><div class="ci">🔬</div><div class="cn">Specialized AI Associate</div><div class="cd">March 2025</div><a href="https://credentials.uipath.com/200a3e9d-0f13-41bf-9c1a-af55b6474bbc" target="_blank" class="cl">View Credential →</a></div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="slbl">Work</div>
+  <div class="stitle">Key Projects</div>
+  <p class="sdesc">Real-world automations that drove measurable impact at enterprise scale.</p>
+  <div class="pgrid">
+    <div class="pcard reveal">
+      <div class="ph"><div class="pico">📊</div><span class="pbadge">70% faster · 80% less effort</span></div>
+      <div class="pname">ReportBotz — Rule-Based Excel Automation</div>
+      <div class="pdesc">A flexible bot template automating any Excel file based on predefined rules — no code changes needed. Handles VLOOKUPs, pivot tables, formula injection, SharePoint file management, and automated email distribution. Processed 50+ files daily in production.</div>
+      <div class="ptags"><span class="ptag">UiPath</span><span class="ptag">Excel</span><span class="ptag">SharePoint</span><span class="ptag">IDP Rules</span></div>
+    </div>
+    <div class="pcard reveal d1">
+      <div class="ph"><div class="pico">💰</div><span class="pbadge">60–80% effort reduction</span></div>
+      <div class="pname">CIRRUS — Finance Bot Automation</div>
+      <div class="pdesc">Led a major client project phase delivering 15 bots automating 35+ finance processes. Integrated with browser apps, mainframe, and Citrix. Used APIs and SQL for robust data flow with configurable Excel-driven variable management.</div>
+      <div class="ptags"><span class="ptag">UiPath</span><span class="ptag">Blue Prism</span><span class="ptag">Mainframe</span><span class="ptag">Citrix</span><span class="ptag">SQL</span><span class="ptag">API</span></div>
+    </div>
+    <div class="pcard reveal d2">
+      <div class="ph"><div class="pico">🧾</div><span class="pbadge">80% manual effort saved</span></div>
+      <div class="pname">Invoice Processing Bot — OCR Automation</div>
+      <div class="pdesc">End-to-end OCR bot monitoring emails and SharePoint every 30 minutes. Extracts vendor details via ABBYY, verifies data, updates Excel, sends approval emails to vendors, and distributes consolidated reports to stakeholders automatically.</div>
+      <div class="ptags"><span class="ptag">UiPath</span><span class="ptag">ABBYY</span><span class="ptag">SharePoint</span><span class="ptag">Email Automation</span></div>
+    </div>
+    <div class="pcard reveal">
+      <div class="ph"><div class="pico">🏆</div><span class="pbadge">Hackathon Winner</span></div>
+      <div class="pname">AI Loan Processing — GenAI Hackathon</div>
+      <div class="pdesc">Won a Generative AI Hackathon designing an intelligent loan system combining ML risk assessments, RPA, and GenAI. Used Blue Prism Decipher for OCR-based data extraction, dramatically reducing processing time and compliance risk.</div>
+      <div class="ptags"><span class="ptag">GenAI</span><span class="ptag">Blue Prism</span><span class="ptag">ML</span><span class="ptag">Decipher OCR</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="slbl">Let's Connect</div>
+  <div class="stitle">Get In Touch</div>
+  <div class="contact-box reveal">
+    <p style="color:var(--muted);font-size:1rem;line-height:1.8;font-weight:300">Looking to automate your business processes or hire an experienced RPA consultant? I'd love to hear from you.</p>
+    <a href="mailto:souravsaha.rpa@gmail.com" class="cemail">souravsaha.rpa@gmail.com</a>
+    <div class="cdetails">
+      <div class="cditem"><span class="cdlbl">Phone</span><span class="cdval">+91 6289691710</span></div>
+      <div class="cditem"><span class="cdlbl">Location</span><span class="cdval">West Bengal, India</span></div>
+      <div class="cditem"><span class="cdlbl">Languages</span><span class="cdval">English · Hindi</span></div>
+    </div>
+    <div style="margin-top:2.5rem"><a href="mailto:souravsaha.rpa@gmail.com" class="btn-g">Say Hello →</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="fc">© 2026 Sourav Saha · IPA Consultant &amp; RPA Developer</div>
+  <div class="fm">// Passionate about intelligent automation</div>
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cur');
+  const curR = document.getElementById('curR');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px';
+    setTimeout(() => { curR.style.left = e.clientX + 'px'; curR.style.top = e.clientY + 'px'; }, 90);
+  });
+
+  // Reveal on scroll
+  const revEls = document.querySelectorAll('.reveal');
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  revEls.forEach(el => ro.observe(el));
+
+  // ── STAMP INTRO ENGINE ──
+  (function() {
+    const overlay = document.getElementById('stamp-overlay');
+    const cards   = Array.from(document.querySelectorAll('.stamp-word'));
+    const dots    = Array.from(document.querySelectorAll('.sdot'));
+    const skip    = document.getElementById('stampSkip');
+    let current = -1;
+    let timer;
+
+    // Colours per index
+    const glows = ['rgba(255,215,0,0.35)','rgba(0,229,195,0.35)','rgba(167,139,250,0.35)','rgba(255,107,53,0.35)'];
+
+    function stampIn(idx) {
+      if (idx >= cards.length) { endOverlay(); return; }
+      current = idx;
+      const card = cards[idx];
+      const text = card.querySelector('.stamp-text');
+      const line = card.querySelector('.stamp-underline');
+      const ring = card.querySelector('.stamp-ring');
+
+      // Dot
+      dots.forEach((d,i) => { d.classList.toggle('on', i === idx); d.style.background = i===idx ? text.style.color||'white' : ''; });
+
+      // Reset
+      card.style.opacity = '0';
+      card.style.display = 'flex';
+      text.style.transform = 'scale(3.5) translateY(20px)';
+      text.style.filter = 'blur(18px)';
+      text.style.opacity = '0';
+      line.style.width = '0';
+      ring.style.opacity = '0';
+      ring.style.transform = 'scale(0.2)';
+
+      // Background glow colour
+      overlay.style.background = `radial-gradient(ellipse 60% 50% at 50% 50%, ${glows[idx]}, #050810 70%)`;
+
+      // Animate in — SLAM
+      requestAnimationFrame(() => {
+        card.style.transition = 'opacity 0.01s';
+        card.style.opacity = '1';
+
+        setTimeout(() => {
+          text.style.transition = 'transform 0.45s cubic-bezier(0.22,1,0.36,1), filter 0.45s ease, opacity 0.3s ease';
+          text.style.transform  = 'scale(1) translateY(0)';
+          text.style.filter     = 'blur(0px)';
+          text.style.opacity    = '1';
+        }, 30);
+
+        // Underline sweep
+        setTimeout(() => {
+          line.style.width = 'clamp(160px, 40vw, 500px)';
+        }, 300);
+
+        // Shockwave ring
+        setTimeout(() => {
+          ring.style.transition = 'opacity 0.1s, transform 0.9s cubic-bezier(0.16,1,0.3,1)';
+          ring.style.opacity    = '0.6';
+          ring.style.transform  = 'scale(4)';
+          setTimeout(() => { ring.style.opacity = '0'; }, 400);
+        }, 50);
+
+        // Hold then exit
+        timer = setTimeout(() => stampOut(idx), 1600);
+      });
+    }
+
+    function stampOut(idx) {
+      const card = cards[idx];
+      const text = card.querySelector('.stamp-text');
+      const line = card.querySelector('.stamp-underline');
+
+      text.style.transition = 'transform 0.3s cubic-bezier(0.55,0,1,0.45), filter 0.3s ease, opacity 0.25s ease';
+      text.style.transform  = 'scale(0.2) translateY(-30px)';
+      text.style.filter     = 'blur(12px)';
+      text.style.opacity    = '0';
+      line.style.transition = 'width 0.25s ease';
+      line.style.width      = '0';
+
+      setTimeout(() => {
+        card.style.opacity = '0';
+        card.style.display = 'none';
+        stampIn(idx + 1);
+      }, 320);
+    }
+
+    function endOverlay() {
+      overlay.style.transition = 'opacity 0.7s ease';
+      overlay.style.opacity    = '0';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        overlay.classList.add('done');
+      }, 700);
+    }
+
+    skip.addEventListener('click', () => { clearTimeout(timer); endOverlay(); });
+
+    // Kick off after tiny delay so fonts load
+    setTimeout(() => stampIn(0), 300);
+  })();
+
+  // Skill bars
+  const bars = document.querySelectorAll('.sbf');
+  const bo = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const w = e.target.dataset.w;
+        e.target.style.transform = `scaleX(${w})`;
+        bo.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  bars.forEach(b => bo.observe(b));
+</script>
+</body>
+</html>
